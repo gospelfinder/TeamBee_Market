@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="noticeMapper">
+
+	<!-- 보여주기 -->
+	<select id="noticeList" resultType="notice">
+		select *
+		from NOTICE
+		ORDER BY NOTICE_BNO desc
+	</select>
+	
+	<select id="noticeDetail" resultType="notice" parameterType="int">
+		select *
+		from NOTICE 
+		where NOTICE_BNO=#{NOTICE_BNO}
+	</select>
+	
+	<insert id="insertNotice" parameterType="notice">
+		insert into NOTICE
+		values(NOTICE_SEQ.NEXTVAL,#{NOTICE_WRITER},#{NOTICE_TITLE},#{NOTICE_CONTENT},sysdate)
+	</insert>
+	
+	<update id="updateNotice" parameterType="notice">
+		update NOTICE
+		set NOTICE_TITLE=#{NOTICE_TITLE}, NOTICE_CONTENT=#{NOTICE_CONTENT}
+		where NOTICE_BNO=#{NOTICE_BNO}
+	</update>
+
+	<delete id="deleteNotice" parameterType="int">
+		delete from NOTICE
+		where NOTICE_BNO=#{NOTICE_BNO}
+	</delete>
+	
+	<select id="noticeListByPage" resultType="notice" parameterType="criteria">
+    	SELECT *
+		FROM ( 
+		      NOTICE_BNO,NOTICE_WRITER,NOTICE_TITLE,NOTICE_CONTENT,NOTICE_REGDATE,
+               ROW_NUMBER() OVER(ORDER BY NOTICE_BNO) AS RNUM
+		       FROM NOTICE 
+		     ) NOTICE
+		WHERE RNUM BETWEEN #{rowStart} AND #{rowEnd}
+		ORDER BY NOTICE_BNO
+	</select>
+		
+	<select id="countNotice" resultType="int">
+			<![CDATA[
+				SELECT COUNT(NOTICE_BNO)
+				  FROM NOTICE
+			]]>
+	</select>
+
+</mapper>
+ 

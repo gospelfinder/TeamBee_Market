@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cartMapper">
+
+	<insert id="insertCart" parameterType="cart">
+		INSERT INTO CART(CART_BNO, MEMBER_ID, PRODUCT_BNO, AMOUNT) 
+		VALUES(CART_SEQ.NEXTVAL, #{MEMBER_ID}, #{PRODUCT_BNO}, #{AMOUNT})
+	</insert>
+
+
+	<select id="listCart" resultType="cart" parameterType="str">
+		SELECT 
+			c.CART_BNO AS CART_BNO,
+			c.MEMBER_ID AS MEMBER_ID,
+			p.PRODUCT_BNO AS PRODUCT_BNO,
+			m.MEMBER_NAME AS MEMBER_NAME,
+			p.PRODUCT_TITLE AS PRODUCT_TITLE,
+			c.AMOUNT,
+			p.PRODUCT_PRICE AS PRODUCT_PRICE,
+			(PRODUCT_PRICE * AMOUNT) MONEY,
+			p.PRODUCT_IMG AS PRODUCT_IMG
+		 FROM
+		 	MEMBER m, PRODUCT p, CART c
+		 WHERE
+		 	m.MEMBER_ID = c.MEMBER_ID
+		 	AND p.PRODUCT_BNO = c.PRODUCT_BNO
+		 	AND c.MEMBER_ID = #{MEMBER_ID}
+		 ORDER BY 
+		 	c.CART_BNO
+	</select>
+	
+	
+	<select id="sumMoney" resultType="int">
+		SELECT NVL(SUM(PRODUCT_PRICE * AMOUNT), 0) MONEY
+		FROM CART c, PRODUCT p
+		WHERE c.PRODUCT_BNO = p.PRODUCT_BNO AND c.MEMBER_ID = #{MEMBER_ID}
+	</select>
+	
+	
+	<update id="modifyCart">
+		UPDATE CART SET AMOUNT = #{AMOUNT}
+		WHERE MEMBER_ID = #{MEMBER_ID}
+		AND PRODUCT_BNO = #{PRODUCT_BNO}
+	</update>
+	
+	<update id="increaseCart">
+		UPDATE CART SET AMOUNT = AMOUNT + 1 
+		WHERE MEMBER_ID = #{MEMBER_ID}
+		AND PRODUCT_BNO = #{PRODUCT_BNO}
+	</update>
+	
+	<update id="decreaseCart">
+		UPDATE CART SET AMOUNT = AMOUNT - 1 
+		WHERE MEMBER_ID = #{MEMBER_ID}
+		AND PRODUCT_BNO = #{PRODUCT_BNO}
+	</update>
+	
+	
+	<delete id="deleteCart">
+		DELETE FROM CART WHERE CART_BNO = #{CART_BNO}
+	</delete>
+	
+	
+	<select id="countCart" resultType="int" parameterType="cart">
+		SELECT COUNT(*) FROM CART WHERE MEMBER_ID = #{MEMBER_ID} AND PRODUCT_BNO = #{PRODUCT_BNO}
+	</select>
+	
+	
+	<update id="updateCart">
+		UPDATE CART SET AMOUNT = AMOUNT + #{AMOUNT}
+		WHERE MEMBER_ID = #{MEMBER_ID}
+		AND PRODUCT_BNO = #{PRODUCT_BNO}
+	</update>
+	
+	<select id="countAmount" resultType="cart" parameterType="cart">
+		SELECT AMOUNT, CART_BNO 
+		FROM CART 
+		WHERE MEMBER_ID = #{MEMBER_ID} AND PRODUCT_BNO = #{PRODUCT_BNO}
+	</select>
+	
+</mapper>
+ 

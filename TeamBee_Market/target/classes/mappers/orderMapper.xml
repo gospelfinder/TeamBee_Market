@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="orderMapper">
+
+	<select id="orderListForAdmin" resultType="order" parameterType="criteria">
+    	SELECT *
+		FROM ( 
+		       SELECT ORDER_BNO,ORDER_STATUS,PRODUCT_TITLE,MEMBER_ID,ORDER_DATE,ORDER_AMOUNT,
+               ROW_NUMBER() OVER(ORDER BY ORDER_STATUS) AS RNUM
+		       FROM PRODUCT_ORDER 
+		     ) PRODUCT_ORDER
+		WHERE RNUM BETWEEN #{rowStart} AND #{rowEnd}
+		ORDER BY ORDER_STATUS
+	</select>
+	
+	<select id="countOrder" resultType="int">
+		<![CDATA[
+			SELECT COUNT(ORDER_BNO)
+			  FROM PRODUCT_ORDER
+			 WHERE ORDER_BNO > 0
+		]]>
+	</select>
+
+	<!-- 상품주문 보여주기(관리자) -->
+	<select id="orderList" resultType="order">
+		select * from PRODUCT_ORDER order by ORDER_STATUS
+	</select>
+	
+	<update id="updateOrderStatus" parameterType="int">
+		update PRODUCT_ORDER
+		set ORDER_STATUS = '배송완료'
+		where ORDER_BNO = #{ORDER_BNO}
+	</update>
+	
+	<!-- 상품주문 보여주기(회원) -->
+	<select id="orderListForMember" resultType="order" parameterType="str">
+		select * 
+		from PRODUCT_ORDER
+		where MEMBER_ID=#{MEMBER_ID}
+		order by ORDER_STATUS
+	</select>
+	
+	<insert id="insertOrder" parameterType="order">
+		insert into PRODUCT_ORDER(ORDER_BNO,ORDER_STATUS,PRODUCT_TITLE,MEMBER_ID,ORDER_DATE,ORDER_AMOUNT,PRODUCT_BNO)
+		values(ORDER_SEQ.nextval,'배송 준비중',#{PRODUCT_TITLE},#{MEMBER_ID},sysdate,#{ORDER_AMOUNT},#{PRODUCT_BNO})
+	</insert>
+	
+	<delete id="deleteOrder" parameterType="int">
+		delete 
+		from PRODUCT_ORDER
+		where ORDER_BNO=#{ORDER_BNO}
+	</delete>
+
+</mapper>
+ 

@@ -1,0 +1,16 @@
+@charset "UTF-8";
+
+            
+
+body {margin:0; padding-top:93.54px; color:#555;} 
+body * {margin:0; padding:0; box-sizing:border-box;}
+ul, ol, dl, li {list-style:none;}
+a {text-decoration:none; color:#4c4c4c;}
+h1,h2,h3,h4,h5,h6 {font-size:16px; font-weight:normal;}
+section, article, header, footer, nav, main {display:block;}
+img {border:none;}
+hr, legend, caption {width:100%; height:0; line-height:0; font-size:0; color:transparent; border:0; overflow:hidden;}
+address {font-style:normal;}
+fieldset {border:0 none;}
+table {border-collapse:collapse;}
+input[type="radio"], input[type="checkbox"] {vertical-align:middle; width:auto; border:none;}

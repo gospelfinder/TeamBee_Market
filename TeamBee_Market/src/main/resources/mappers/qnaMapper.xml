@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="qnaMapper">
+	
+	<!-- 전체 -->
+	<select id="qnaList" resultType="qna">
+		SELECT * FROM QNA 
+		ORDER BY QNA_BNO DESC
+	</select>
+	
+	<!--쓰기 -->
+	<insert id="insertQna" parameterType="qna">
+		INSERT INTO QNA (QNA_BNO, QNA_WRITER,QNA_TITLE, QNA_CONTENT, QNA_REGDATE) 
+		VALUES (QNA_SEQ.NEXTVAL, #{QNA_WRITER}, #{QNA_TITLE}, #{QNA_CONTENT}, sysdate) 
+	</insert>
+	
+	<!--수정 -->
+	<update id="updateQna" parameterType="qna">
+		UPDATE QNA 
+		SET QNA_TITLE = #{QNA_TITLE}, QNA_CONTENT = #{QNA_CONTENT} 
+		WHERE QNA_BNO = #{QNA_BNO}
+	</update>
+	
+	<!--삭제 -->
+	<delete id="deleteQna" parameterType="int">
+		DELETE FROM QNA 
+		WHERE QNA_BNO = #{QNA_BNO}
+	</delete>
+	
+	<!--상세 -->
+	<select id="detailQna" resultType="qna" parameterType="int">
+		SELECT * FROM QNA 
+		WHERE QNA_BNO = #{QNA_BNO}
+	</select>
+	
+	<!--댓글보기 -->
+	<select id="selectQnaReply" resultType="str" parameterType="int">
+		SELECT QNA_REPLY 
+		FROM QNA 
+		WHERE QNA_BNO = #{QNA_BNO} 
+	</select>
+
+	<!--댓글쓰기 -->
+	<update id="updateQnaReply" parameterType="qna">
+		UPDATE QNA 
+		SET QNA_REPLY = #{QNA_REPLY}
+		WHERE QNA_BNO = #{QNA_BNO}
+	</update>
+	
+	<!--삭제 -->
+	<update id="deleteQnaReply" parameterType="int">
+		update QNA
+		SET QNA_REPLY = null
+		WHERE QNA_BNO = #{QNA_BNO}
+	</update>
+
+	<select id="qnaListByPage" resultType="qna" parameterType="criteria">
+    	SELECT *
+		FROM ( 
+		      QNA_BNO,QNA_TITLE,QNA_CONTENT,QNA_REGDATE,QNA_WRITER,QNA_REPLY,
+               ROW_NUMBER() OVER(ORDER BY QNA_BNO) AS RNUM
+		       FROM QNA 
+		     ) QNA
+		WHERE RNUM BETWEEN #{rowStart} AND #{rowEnd}
+		ORDER BY QNA_BNO
+	</select>
+		
+	<select id="countQna" resultType="int">
+			<![CDATA[
+				SELECT COUNT(QNA_BNO)
+				  FROM QNA
+			]]>
+	</select>
+
+</mapper>
+ 
